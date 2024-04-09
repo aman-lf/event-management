@@ -2,20 +2,55 @@
 
 package model
 
+type EventFilter struct {
+	ID        *string `json:"id,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	StartDate *string `json:"startDate,omitempty"`
+	EndDate   *string `json:"endDate,omitempty"`
+	Location  *string `json:"location,omitempty"`
+	Type      *string `json:"type,omitempty"`
+}
+
+type EventQueryOptions struct {
+	Filter    *EventFilter `json:"filter,omitempty"`
+	Limit     *int         `json:"limit,omitempty"`
+	Offset    *int         `json:"offset,omitempty"`
+	SortBy    *string      `json:"sortBy,omitempty"`
+	SortOrder *string      `json:"sortOrder,omitempty"`
+}
+
 type Mutation struct {
 }
 
-type NewUser struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
+type ParticipantFilter struct {
+	ID      *string `json:"id,omitempty"`
+	UserID  *string `json:"userId,omitempty"`
+	EventID *string `json:"eventId,omitempty"`
+	Role    *string `json:"role,omitempty"`
+}
+
+type ParticipantQueryOptions struct {
+	Filter    *ParticipantFilter `json:"filter,omitempty"`
+	Limit     *int               `json:"limit,omitempty"`
+	Offset    *int               `json:"offset,omitempty"`
+	SortBy    *string            `json:"sortBy,omitempty"`
+	SortOrder *string            `json:"sortOrder,omitempty"`
 }
 
 type Query struct {
 }
 
-type User struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	Email   string `json:"email"`
-	Phoneno string `json:"phoneno"`
+type UserFilter struct {
+	ID      *string `json:"id,omitempty"`
+	Name    *string `json:"name,omitempty"`
+	Email   *string `json:"email,omitempty"`
+	PhoneNo *string `json:"phoneNo,omitempty"`
+}
+
+type UserQueryOptions struct {
+	Filter    *UserFilter `json:"filter,omitempty"`
+	Limit     *int        `json:"limit,omitempty"`
+	Offset    *int        `json:"offset,omitempty"`
+	SortBy    *string     `json:"sortBy,omitempty"`
+	SortOrder *string     `json:"sortOrder,omitempty"`
 }

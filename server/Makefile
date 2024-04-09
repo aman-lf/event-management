@@ -1,0 +1,3 @@
+# ge
+gql-generate:
+	go generate ./...

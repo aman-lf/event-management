@@ -1,0 +1,7 @@
+#Miscellaneous
+.vscode/
+__debug_bin
+.env
+
+vendor/
+launch.json

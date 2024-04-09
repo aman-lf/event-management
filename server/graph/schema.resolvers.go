@@ -6,35 +6,60 @@ package graph
 
 import (
 	"context"
-	"crypto/rand"
-	"math/big"
 
+	"github.com/aman-lf/event-management/controller"
 	"github.com/aman-lf/event-management/graph/model"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	randNumber, _ := rand.Int(rand.Reader, big.NewInt(100))
-	todo := &model.User{
-		ID:      randNumber.String(),
-		Name:    input.Name,
-		Email:   input.Email,
-		Phoneno: "123",
-	}
-	r.user = append(r.user, todo)
-	return todo, nil
+	return controller.CreateUserHandler(ctx, input)
+}
+
+// CreateEvent is the resolver for the createEvent field.
+func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent) (*model.Event, error) {
+	return controller.CreateEventHandler(ctx, input)
+}
+
+// CreateParticipant is the resolver for the createParticipant field.
+func (r *mutationResolver) CreateParticipant(ctx context.Context, input model.NewParticipant) (*model.Participant, error) {
+	return controller.CreateParticipantHandler(ctx, input)
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context) ([]*model.User, error) {
-	return r.user, nil
+func (r *participantResolver) User(ctx context.Context, obj *model.Participant) (*model.User, error) {
+	return controller.GetUserByIdHandler(ctx, obj.UserId)
+}
+
+// Event is the resolver for the event field.
+func (r *participantResolver) Event(ctx context.Context, obj *model.Participant) (*model.Event, error) {
+	return controller.GetEventByIdHandler(ctx, obj.EventID)
+}
+
+// User is the resolver for the user field.
+func (r *queryResolver) User(ctx context.Context, options *model.UserQueryOptions) ([]*model.User, error) {
+	return controller.GetUsersHandler(ctx, options)
+}
+
+// Event is the resolver for the event field.
+func (r *queryResolver) Event(ctx context.Context, options *model.EventQueryOptions) ([]*model.Event, error) {
+	return controller.GetEventsHandler(ctx, options)
+}
+
+// Participant is the resolver for the participant field.
+func (r *queryResolver) Participant(ctx context.Context, options *model.ParticipantQueryOptions) ([]*model.Participant, error) {
+	return controller.GetParticipantHandler(ctx, options)
 }
 
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+// Participant returns ParticipantResolver implementation.
+func (r *Resolver) Participant() ParticipantResolver { return &participantResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+type participantResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

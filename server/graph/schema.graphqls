@@ -6,18 +6,104 @@ type User {
   id: ID!
   name: String!
   email: String!
-  phoneno: String!
+  phoneNo: String!
+}
+
+type Event {
+  id: ID!
+  name: String!
+  startDate: String!
+  endDate: String!
+  location: String!
+  type: String
+  description: String
+}
+
+type Participant {
+  id: ID!
+  userId: ID!
+  user: User!
+  eventId: ID!
+  event: Event!
+  role: String!
+}
+
+input UserFilter {
+  id: ID
+  name: String
+  email: String
+  phoneNo: String
+}
+
+input EventFilter {
+  id: ID
+  name: String
+  startDate: String
+  endDate: String
+  location: String
+  type: String
+}
+
+input ParticipantFilter {
+  id: ID
+  userId: String
+  eventId: String
+  role: String
+}
+
+input UserQueryOptions {
+  filter: UserFilter
+  limit: Int = 20
+  offset: Int = 0
+  sortBy: String
+  sortOrder: String
+}
+
+input EventQueryOptions {
+  filter: EventFilter
+  limit: Int = 20
+  offset: Int = 0
+  sortBy: String
+  sortOrder: String
+}
+
+input ParticipantQueryOptions {
+  filter: ParticipantFilter
+  limit: Int = 20
+  offset: Int = 0
+  sortBy: String
+  sortOrder: String
 }
 
 type Query {
-  user: [User!]!
+  user(options: UserQueryOptions): [User!]!
+  event(options: EventQueryOptions): [Event!]!
+  participant(options: ParticipantQueryOptions): [Participant!]!
+}
+
+input NewEvent {
+  name: String!
+  startDate: String!
+  endDate: String!
+  location: String!
+  type: String
+  description: String
 }
 
 input NewUser {
   name: String!
   email: String!
+  phoneNo: String
+}
+
+input NewParticipant {
+  userId: Int!
+  eventId: Int!
+  role: String!
 }
 
 type Mutation {
   createUser(input: NewUser!): User!
+  createEvent(input: NewEvent!): Event!
+  createParticipant(input: NewParticipant!): Participant!
 }

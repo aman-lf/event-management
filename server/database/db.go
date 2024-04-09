@@ -4,6 +4,11 @@ import (
 	"github.com/aman-lf/event-management/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+)
+
+var (
+	DB *gorm.DB
 )
 
 func ConnectDB() (*gorm.DB, error) {
@@ -16,10 +21,14 @@ func ConnectDB() (*gorm.DB, error) {
 	dsn := "user=" + dbUser + " password=" + dbPassword + " dbname=" + dbName + " host=" + dbHost + " port=" + dbPort + " sslmode=disable TimeZone=Asia/Shanghai"
 
 	// Initialize GORM DB connection
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
 	if err != nil {
 		return nil, err
 	}
+
+	DB = db
 
 	return db, nil
 }
