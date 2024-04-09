@@ -89,3 +89,12 @@ func DeleteExpenseHandler(ctx context.Context, idStr string) (bool, error) {
 
 	return service.DeleteExpense(ctx, id)
 }
+
+func GetExpenseReportHandler(ctx context.Context, idStr string) (*graphModel.ExpenseReport, error) {
+	id, _ := strconv.Atoi(idStr)
+	err := hasAdminOrContributerAccess(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return service.GetExpenseReport(ctx, id)
+}

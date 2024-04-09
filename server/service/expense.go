@@ -99,3 +99,38 @@ func DeleteExpense(ctx context.Context, id int) (bool, error) {
 
 	return true, nil
 }
+
+func GetExpenseReport(ctx context.Context, eventId int) (*graphModel.ExpenseReport, error) {
+	var totalExpenses int
+	expensesByCategory := []*graphModel.ExpenseCategory{}
+
+	// Retrieve total expenses for the event
+	result := database.DB.Model(&model.Expense{}).Where("event_id = ?", eventId).Select("COALESCE(SUM(cost), 0)").Scan(&totalExpenses)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Retrieve expenses breakdown by category
+	rows, err := database.DB.Model(&model.Expense{}).Where("event_id = ?", eventId).Select("type, SUM(cost) as total_cost").Group("type").Rows()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category string
+		var cost int
+		if err := rows.Scan(&category, &cost); err != nil {
+			return nil, err
+		}
+		expensesByCategory = append(expensesByCategory, &graphModel.ExpenseCategory{
+			Category: category,
+			Cost:     cost,
+		})
+	}
+
+	return &graphModel.ExpenseReport{
+		TotalExpenses:      totalExpenses,
+		ExpensesByCategory: expensesByCategory,
+	}, nil
+}

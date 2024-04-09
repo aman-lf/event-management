@@ -131,6 +131,11 @@ func (r *queryResolver) Activity(ctx context.Context, filter *model.ActivityFilt
 	return controller.GetActivityHandler(ctx, filter, pagination)
 }
 
+// ExpenseReport is the resolver for the expenseReport field.
+func (r *queryResolver) ExpenseReport(ctx context.Context, eventID string) (*model.ExpenseReport, error) {
+	return controller.GetExpenseReportHandler(ctx, eventID)
+}
+
 // Activity returns ActivityResolver implementation.
 func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
 

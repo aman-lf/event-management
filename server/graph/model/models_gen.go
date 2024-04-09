@@ -19,10 +19,20 @@ type EventFilter struct {
 	Type      *string `json:"type,omitempty"`
 }
 
+type ExpenseCategory struct {
+	Category string `json:"category"`
+	Cost     int    `json:"cost"`
+}
+
 type ExpenseFilter struct {
 	ID       *string `json:"id,omitempty"`
 	ItemName *string `json:"itemName,omitempty"`
 	Type     *string `json:"type,omitempty"`
+}
+
+type ExpenseReport struct {
+	TotalExpenses      int                `json:"totalExpenses"`
+	ExpensesByCategory []*ExpenseCategory `json:"expensesByCategory"`
 }
 
 type Mutation struct {
