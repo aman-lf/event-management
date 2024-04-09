@@ -59,7 +59,6 @@ func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, err
 // UpdateEvent is the resolver for the updateEvent field.
 func (r *mutationResolver) UpdateEvent(ctx context.Context, id string, input model.UpdateEvent) (*model.Event, error) {
 	return controller.UpdateEventHandler(ctx, id, input)
-
 }
 
 // DeleteEvent is the resolver for the deleteEvent field.
@@ -118,13 +117,13 @@ func (r *queryResolver) Event(ctx context.Context, filter *model.EventFilter, pa
 }
 
 // Participant is the resolver for the participant field.
-func (r *queryResolver) Participant(ctx context.Context, filter *model.ParticipantFilter, pagination *model.Pagination) ([]*model.Participant, error) {
-	return controller.GetParticipantHandler(ctx, filter, pagination)
+func (r *queryResolver) Participant(ctx context.Context, eventID string, filter *model.ParticipantFilter, pagination *model.Pagination) ([]*model.Participant, error) {
+	return controller.GetParticipantByEventIdHandler(ctx, eventID, filter, pagination)
 }
 
 // Expense is the resolver for the expense field.
-func (r *queryResolver) Expense(ctx context.Context, filter *model.ExpenseFilter, pagination *model.Pagination) ([]*model.Expense, error) {
-	return controller.GetExpenseHandler(ctx, filter, pagination)
+func (r *queryResolver) Expense(ctx context.Context, eventID string, filter *model.ExpenseFilter, pagination *model.Pagination) ([]*model.Expense, error) {
+	return controller.GetExpenseByEventIdHandler(ctx, eventID, filter, pagination)
 }
 
 // Activity is the resolver for the activity field.

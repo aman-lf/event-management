@@ -37,10 +37,12 @@ func CreateActivity(ctx context.Context, input graphModel.NewActivity) (*model.A
 	return &activity, nil
 }
 
-func GetActivities(ctx context.Context, filter *graphModel.ActivityFilter, pagination *graphModel.Pagination) ([]*model.Activity, error) {
+func GetActivitiesByUserId(ctx context.Context, userId int, filter *graphModel.ActivityFilter, pagination *graphModel.Pagination) ([]*model.Activity, error) {
 	var activities []*model.Activity
 
-	query := database.DB.Model(&model.Activity{})
+	query := database.DB.Model(&model.Activity{}).
+		Joins("JOIN participants ON participants.event_id = activity.event_id").
+		Where("participants.user_id = ?", userId)
 
 	if filter != nil {
 		if filter.ID != nil && *filter.ID != "" {

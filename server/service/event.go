@@ -39,10 +39,12 @@ func CreateEvent(ctx context.Context, input graphModel.NewEvent) (*model.Event, 
 	return &event, err
 }
 
-func GetEvents(ctx context.Context, filter *graphModel.EventFilter, pagination *graphModel.Pagination) ([]*model.Event, error) {
+func GetEventsByUserId(ctx context.Context, userId int, filter *graphModel.EventFilter, pagination *graphModel.Pagination) ([]*model.Event, error) {
 	var events []*model.Event
 
-	query := database.DB.Model(&model.Event{})
+	query := database.DB.Model(&model.Event{}).
+		Joins("JOIN participants ON participants.event_id = events.id").
+		Where("participants.user_id = ?", userId)
 
 	if filter != nil {
 		if filter.ID != nil && *filter.ID != "" {

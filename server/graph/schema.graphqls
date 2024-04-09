@@ -67,7 +67,6 @@ input EventFilter {
 input ParticipantFilter {
   id: ID
   userId: String
-  eventId: String
   role: String
 }
 
@@ -75,7 +74,6 @@ input ExpenseFilter {
   id: ID
   itemName: String
   type: String
-  eventID: ID
 }
 
 input ActivityFilter {
@@ -97,10 +95,15 @@ type Query {
   user(filter: UserFilter, pagination: Pagination): [User!]!
   event(filter: EventFilter, pagination: Pagination): [Event!]!
   participant(
+    eventId: ID!
     filter: ParticipantFilter
     pagination: Pagination
   ): [Participant!]!
-  expense(filter: ExpenseFilter, pagination: Pagination): [Expense!]!
+  expense(
+    eventId: ID!
+    filter: ExpenseFilter
+    pagination: Pagination
+  ): [Expense!]!
   activity(filter: ActivityFilter, pagination: Pagination): [Activity!]!
 }
 

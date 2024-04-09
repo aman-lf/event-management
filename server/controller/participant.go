@@ -8,8 +8,14 @@ import (
 	"github.com/aman-lf/event-management/service"
 )
 
-func GetParticipantHandler(ctx context.Context, filter *graphModel.ParticipantFilter, pagination *graphModel.Pagination) ([]*graphModel.Participant, error) {
-	participants, err := service.GetParticipants(ctx, filter, pagination)
+func GetParticipantByEventIdHandler(ctx context.Context, eventIdStr string, filter *graphModel.ParticipantFilter, pagination *graphModel.Pagination) ([]*graphModel.Participant, error) {
+	eventId, _ := strconv.Atoi(eventIdStr)
+	err := hasEventAccess(ctx, eventId)
+	if err != nil {
+		return nil, err
+	}
+
+	participants, err := service.GetParticipantsByEventId(ctx, eventId, filter, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -28,6 +34,12 @@ func GetParticipantHandler(ctx context.Context, filter *graphModel.ParticipantFi
 }
 
 func CreateParticipantHandler(ctx context.Context, input graphModel.NewParticipant) (*graphModel.Participant, error) {
+	// Check if role can be added
+	err := canManageParticipant(ctx, input.EventID, input.Role)
+	if err != nil {
+		return nil, err
+	}
+
 	participant, err := service.CreateParticipant(ctx, input)
 	if err != nil {
 		return nil, err
@@ -43,6 +55,14 @@ func CreateParticipantHandler(ctx context.Context, input graphModel.NewParticipa
 }
 
 func UpdateParticipantHandler(ctx context.Context, idStr string, input graphModel.UpdateParticipant) (*graphModel.Participant, error) {
+	if input.Role != nil {
+		// Check if role can be edited
+		err := canManageParticipant(ctx, *input.EventID, *input.Role)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	id, _ := strconv.Atoi(idStr)
 	participant, err := service.UpdateParticipant(ctx, id, input)
 	if err != nil {
@@ -59,6 +79,11 @@ func UpdateParticipantHandler(ctx context.Context, idStr string, input graphMode
 }
 
 func DeleteParticipantHandler(ctx context.Context, idStr string) (bool, error) {
+	err := canDeleteParticipant(ctx, idStr)
+	if err != nil {
+		return false, err
+	}
+
 	id, _ := strconv.Atoi(idStr)
 	return service.DeleteParticipant(ctx, id)
 }

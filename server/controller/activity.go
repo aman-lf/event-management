@@ -5,11 +5,13 @@ import (
 	"strconv"
 
 	graphModel "github.com/aman-lf/event-management/graph/model"
+	"github.com/aman-lf/event-management/middleware"
 	"github.com/aman-lf/event-management/service"
 )
 
 func GetActivityHandler(ctx context.Context, filter *graphModel.ActivityFilter, pagination *graphModel.Pagination) ([]*graphModel.Activity, error) {
-	activities, err := service.GetActivities(ctx, filter, pagination)
+	userId := middleware.GetCurrentUserIDFromContext(ctx)
+	activities, err := service.GetActivitiesByUserId(ctx, *userId, filter, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -30,6 +32,11 @@ func GetActivityHandler(ctx context.Context, filter *graphModel.ActivityFilter, 
 }
 
 func CreateActivityHandler(ctx context.Context, input graphModel.NewActivity) (*graphModel.Activity, error) {
+	err := hasAdminOrContributerAccess(ctx, input.EventID)
+	if err != nil {
+		return nil, err
+	}
+
 	activity, err := service.CreateActivity(ctx, input)
 	if err != nil {
 		return nil, err
@@ -48,6 +55,11 @@ func CreateActivityHandler(ctx context.Context, input graphModel.NewActivity) (*
 
 func UpdateActivityHandler(ctx context.Context, idStr string, input graphModel.UpdateActivity) (*graphModel.Activity, error) {
 	id, _ := strconv.Atoi(idStr)
+	err := hasAdminOrContributerAccess(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
 	activity, err := service.UpdateActivity(ctx, id, input)
 	if err != nil {
 		return nil, err
@@ -66,5 +78,10 @@ func UpdateActivityHandler(ctx context.Context, idStr string, input graphModel.U
 
 func DeleteActivityHandler(ctx context.Context, idStr string) (bool, error) {
 	id, _ := strconv.Atoi(idStr)
+	err := hasAdminOrContributerAccess(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
 	return service.DeleteActivity(ctx, id)
 }

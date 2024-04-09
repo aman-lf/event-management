@@ -28,7 +28,7 @@ func CreateExpense(ctx context.Context, input graphModel.NewExpense) (*model.Exp
 	return &expense, nil
 }
 
-func GetExpenses(ctx context.Context, filter *graphModel.ExpenseFilter, pagination *graphModel.Pagination) ([]*model.Expense, error) {
+func GetExpensesByEventId(ctx context.Context, eventId int, filter *graphModel.ExpenseFilter, pagination *graphModel.Pagination) ([]*model.Expense, error) {
 	var expenses []*model.Expense
 
 	query := database.DB.Model(&model.Expense{})
@@ -43,16 +43,13 @@ func GetExpenses(ctx context.Context, filter *graphModel.ExpenseFilter, paginati
 		if filter.Type != nil && *filter.Type != "" {
 			query = query.Where("LOWER(type) ILIKE ?", "%"+strings.ToLower(*filter.Type)+"%")
 		}
-		if filter.EventID != nil && *filter.EventID != "" {
-			query = query.Where("event_id = ?", *filter.EventID)
-		}
 
 		// Apply pagination and sort
 		query = utils.ApplyPagination(query, pagination, "id", expenseSortableCol)
 	}
 
 	// Execute the query and fetch expenses
-	result := query.Find(&expenses)
+	result := query.Where("event_id = ?", eventId).Find(&expenses)
 
 	if result.Error != nil {
 		return nil, result.Error

@@ -11,7 +11,16 @@ import (
 )
 
 func GetEventsHandler(ctx context.Context, filter *graphModel.EventFilter, pagination *graphModel.Pagination) ([]*graphModel.Event, error) {
-	events, err := service.GetEvents(ctx, filter, pagination)
+	if filter != nil && filter.ID != nil {
+		eventId, _ := strconv.Atoi(*filter.ID)
+		err := hasEventAccess(ctx, eventId)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	userId := middleware.GetCurrentUserIDFromContext(ctx)
+	events, err := service.GetEventsByUserId(ctx, *userId, filter, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -81,6 +90,11 @@ func CreateEventHandler(ctx context.Context, input graphModel.NewEvent) (*graphM
 
 func UpdateEventHandler(ctx context.Context, idStr string, input graphModel.UpdateEvent) (*graphModel.Event, error) {
 	id, _ := strconv.Atoi(idStr)
+	err := hasAdminAccess(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
 	event, err := service.UpdateEvent(ctx, id, input)
 	if err != nil {
 		return nil, err
@@ -100,5 +114,10 @@ func UpdateEventHandler(ctx context.Context, idStr string, input graphModel.Upda
 
 func DeleteEventHandler(ctx context.Context, idStr string) (bool, error) {
 	id, _ := strconv.Atoi(idStr)
+	err := hasAdminAccess(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
 	return service.DeleteEvent(ctx, id)
 }

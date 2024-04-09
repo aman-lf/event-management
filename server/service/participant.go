@@ -26,7 +26,7 @@ func CreateParticipant(ctx context.Context, input graphModel.NewParticipant) (*m
 	return &participant, nil
 }
 
-func GetParticipants(ctx context.Context, filter *graphModel.ParticipantFilter, pagination *graphModel.Pagination) ([]*model.Participant, error) {
+func GetParticipantsByEventId(ctx context.Context, eventId int, filter *graphModel.ParticipantFilter, pagination *graphModel.Pagination) ([]*model.Participant, error) {
 	var participants []*model.Participant
 
 	query := database.DB.Model(&model.Participant{})
@@ -38,9 +38,6 @@ func GetParticipants(ctx context.Context, filter *graphModel.ParticipantFilter, 
 		if filter.UserID != nil && *filter.UserID != "" {
 			query = query.Where("user_id = ?", *filter.UserID)
 		}
-		if filter.EventID != nil && *filter.EventID != "" {
-			query = query.Where("event_id = ?", *filter.EventID)
-		}
 		if filter.Role != nil && *filter.Role != "" {
 			query = query.Where("LOWER(role) ILIKE ?", "%"+strings.ToLower(*filter.Role)+"%")
 		}
@@ -50,13 +47,22 @@ func GetParticipants(ctx context.Context, filter *graphModel.ParticipantFilter, 
 	}
 
 	// Execute the query and fetch participants
-	result := query.Find(&participants)
+	result := query.Where("event_id = ?", eventId).Find(&participants)
 
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	return participants, nil
+}
+
+func GetParticipantByUserIDAndEventId(ctx context.Context, userId, eventId int) (*model.Participant, error) {
+	var participant *model.Participant
+	result := database.DB.Where("event_id = ? AND user_id = ?", eventId, userId).First(&participant)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return participant, nil
 }
 
 func UpdateParticipant(ctx context.Context, id int, input graphModel.UpdateParticipant) (*model.Participant, error) {

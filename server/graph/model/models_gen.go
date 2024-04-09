@@ -23,7 +23,6 @@ type ExpenseFilter struct {
 	ID       *string `json:"id,omitempty"`
 	ItemName *string `json:"itemName,omitempty"`
 	Type     *string `json:"type,omitempty"`
-	EventID  *string `json:"eventID,omitempty"`
 }
 
 type Mutation struct {
@@ -37,10 +36,9 @@ type Pagination struct {
 }
 
 type ParticipantFilter struct {
-	ID      *string `json:"id,omitempty"`
-	UserID  *string `json:"userId,omitempty"`
-	EventID *string `json:"eventId,omitempty"`
-	Role    *string `json:"role,omitempty"`
+	ID     *string `json:"id,omitempty"`
+	UserID *string `json:"userId,omitempty"`
+	Role   *string `json:"role,omitempty"`
 }
 
 type Query struct {

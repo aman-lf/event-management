@@ -110,8 +110,8 @@ type ComplexityRoot struct {
 	Query struct {
 		Activity    func(childComplexity int, filter *model.ActivityFilter, pagination *model.Pagination) int
 		Event       func(childComplexity int, filter *model.EventFilter, pagination *model.Pagination) int
-		Expense     func(childComplexity int, filter *model.ExpenseFilter, pagination *model.Pagination) int
-		Participant func(childComplexity int, filter *model.ParticipantFilter, pagination *model.Pagination) int
+		Expense     func(childComplexity int, eventID string, filter *model.ExpenseFilter, pagination *model.Pagination) int
+		Participant func(childComplexity int, eventID string, filter *model.ParticipantFilter, pagination *model.Pagination) int
 		User        func(childComplexity int, filter *model.UserFilter, pagination *model.Pagination) int
 	}
 
@@ -154,8 +154,8 @@ type ParticipantResolver interface {
 type QueryResolver interface {
 	User(ctx context.Context, filter *model.UserFilter, pagination *model.Pagination) ([]*model.User, error)
 	Event(ctx context.Context, filter *model.EventFilter, pagination *model.Pagination) ([]*model.Event, error)
-	Participant(ctx context.Context, filter *model.ParticipantFilter, pagination *model.Pagination) ([]*model.Participant, error)
-	Expense(ctx context.Context, filter *model.ExpenseFilter, pagination *model.Pagination) ([]*model.Expense, error)
+	Participant(ctx context.Context, eventID string, filter *model.ParticipantFilter, pagination *model.Pagination) ([]*model.Participant, error)
+	Expense(ctx context.Context, eventID string, filter *model.ExpenseFilter, pagination *model.Pagination) ([]*model.Expense, error)
 	Activity(ctx context.Context, filter *model.ActivityFilter, pagination *model.Pagination) ([]*model.Activity, error)
 }
 
@@ -581,7 +581,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Expense(childComplexity, args["filter"].(*model.ExpenseFilter), args["pagination"].(*model.Pagination)), true
+		return e.complexity.Query.Expense(childComplexity, args["eventId"].(string), args["filter"].(*model.ExpenseFilter), args["pagination"].(*model.Pagination)), true
 
 	case "Query.participant":
 		if e.complexity.Query.Participant == nil {
@@ -593,7 +593,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Participant(childComplexity, args["filter"].(*model.ParticipantFilter), args["pagination"].(*model.Pagination)), true
+		return e.complexity.Query.Participant(childComplexity, args["eventId"].(string), args["filter"].(*model.ParticipantFilter), args["pagination"].(*model.Pagination)), true
 
 	case "Query.user":
 		if e.complexity.Query.User == nil {
@@ -1111,48 +1111,66 @@ func (ec *executionContext) field_Query_event_args(ctx context.Context, rawArgs 
 func (ec *executionContext) field_Query_expense_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.ExpenseFilter
+	var arg0 string
+	if tmp, ok := rawArgs["eventId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["eventId"] = arg0
+	var arg1 *model.ExpenseFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOExpenseFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐExpenseFilter(ctx, tmp)
+		arg1, err = ec.unmarshalOExpenseFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐExpenseFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["filter"] = arg0
-	var arg1 *model.Pagination
+	args["filter"] = arg1
+	var arg2 *model.Pagination
 	if tmp, ok := rawArgs["pagination"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
-		arg1, err = ec.unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx, tmp)
+		arg2, err = ec.unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["pagination"] = arg1
+	args["pagination"] = arg2
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_participant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.ParticipantFilter
+	var arg0 string
+	if tmp, ok := rawArgs["eventId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventId"))
+		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["eventId"] = arg0
+	var arg1 *model.ParticipantFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOParticipantFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐParticipantFilter(ctx, tmp)
+		arg1, err = ec.unmarshalOParticipantFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐParticipantFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["filter"] = arg0
-	var arg1 *model.Pagination
+	args["filter"] = arg1
+	var arg2 *model.Pagination
 	if tmp, ok := rawArgs["pagination"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
-		arg1, err = ec.unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx, tmp)
+		arg2, err = ec.unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["pagination"] = arg1
+	args["pagination"] = arg2
 	return args, nil
 }
 
@@ -3571,7 +3589,7 @@ func (ec *executionContext) _Query_participant(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Participant(rctx, fc.Args["filter"].(*model.ParticipantFilter), fc.Args["pagination"].(*model.Pagination))
+		return ec.resolvers.Query().Participant(rctx, fc.Args["eventId"].(string), fc.Args["filter"].(*model.ParticipantFilter), fc.Args["pagination"].(*model.Pagination))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3640,7 +3658,7 @@ func (ec *executionContext) _Query_expense(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Expense(rctx, fc.Args["filter"].(*model.ExpenseFilter), fc.Args["pagination"].(*model.Pagination))
+		return ec.resolvers.Query().Expense(rctx, fc.Args["eventId"].(string), fc.Args["filter"].(*model.ExpenseFilter), fc.Args["pagination"].(*model.Pagination))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5970,7 +5988,7 @@ func (ec *executionContext) unmarshalInputExpenseFilter(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "itemName", "type", "eventID"}
+	fieldsInOrder := [...]string{"id", "itemName", "type"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5998,13 +6016,6 @@ func (ec *executionContext) unmarshalInputExpenseFilter(ctx context.Context, obj
 				return it, err
 			}
 			it.Type = data
-		case "eventID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventID"))
-			data, err := ec.unmarshalOID2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.EventID = data
 		}
 	}
 
@@ -6327,7 +6338,7 @@ func (ec *executionContext) unmarshalInputParticipantFilter(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "userId", "eventId", "role"}
+	fieldsInOrder := [...]string{"id", "userId", "role"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -6348,13 +6359,6 @@ func (ec *executionContext) unmarshalInputParticipantFilter(ctx context.Context,
 				return it, err
 			}
 			it.UserID = data
-		case "eventId":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("eventId"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.EventID = data
 		case "role":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
 			data, err := ec.unmarshalOString2ᚖstring(ctx, v)

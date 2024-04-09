@@ -8,8 +8,14 @@ import (
 	"github.com/aman-lf/event-management/service"
 )
 
-func GetExpenseHandler(ctx context.Context, filter *graphModel.ExpenseFilter, pagination *graphModel.Pagination) ([]*graphModel.Expense, error) {
-	expenses, err := service.GetExpenses(ctx, filter, pagination)
+func GetExpenseByEventIdHandler(ctx context.Context, eventIdStr string, filter *graphModel.ExpenseFilter, pagination *graphModel.Pagination) ([]*graphModel.Expense, error) {
+	eventId, _ := strconv.Atoi(eventIdStr)
+	err := hasAdminOrContributerAccess(ctx, eventId)
+	if err != nil {
+		return nil, err
+	}
+
+	expenses, err := service.GetExpensesByEventId(ctx, eventId, filter, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -30,6 +36,11 @@ func GetExpenseHandler(ctx context.Context, filter *graphModel.ExpenseFilter, pa
 }
 
 func CreateExpenseHandler(ctx context.Context, input graphModel.NewExpense) (*graphModel.Expense, error) {
+	err := hasAdminAccess(ctx, input.EventID)
+	if err != nil {
+		return nil, err
+	}
+
 	expense, err := service.CreateExpense(ctx, input)
 	if err != nil {
 		return nil, err
@@ -48,6 +59,11 @@ func CreateExpenseHandler(ctx context.Context, input graphModel.NewExpense) (*gr
 
 func UpdateExpenseHandler(ctx context.Context, idStr string, input graphModel.UpdateExpense) (*graphModel.Expense, error) {
 	id, _ := strconv.Atoi(idStr)
+	err := hasAdminAccess(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
 	expense, err := service.UpdateExpense(ctx, id, input)
 	if err != nil {
 		return nil, err
@@ -66,5 +82,10 @@ func UpdateExpenseHandler(ctx context.Context, idStr string, input graphModel.Up
 
 func DeleteExpenseHandler(ctx context.Context, idStr string) (bool, error) {
 	id, _ := strconv.Atoi(idStr)
+	err := hasAdminAccess(ctx, id)
+	if err != nil {
+		return false, err
+	}
+
 	return service.DeleteExpense(ctx, id)
 }
