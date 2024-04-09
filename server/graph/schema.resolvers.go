@@ -11,6 +11,16 @@ import (
 	"github.com/aman-lf/event-management/graph/model"
 )
 
+// Event is the resolver for the event field.
+func (r *activityResolver) Event(ctx context.Context, obj *model.Activity) (*model.Event, error) {
+	return controller.GetEventByIdHandler(ctx, obj.EventID)
+}
+
+// Event is the resolver for the event field.
+func (r *expenseResolver) Event(ctx context.Context, obj *model.Expense) (*model.Event, error) {
+	return controller.GetEventByIdHandler(ctx, obj.EventID)
+}
+
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	return controller.CreateUserHandler(ctx, input)
@@ -24,6 +34,16 @@ func (r *mutationResolver) CreateEvent(ctx context.Context, input model.NewEvent
 // CreateParticipant is the resolver for the createParticipant field.
 func (r *mutationResolver) CreateParticipant(ctx context.Context, input model.NewParticipant) (*model.Participant, error) {
 	return controller.CreateParticipantHandler(ctx, input)
+}
+
+// CreateActivity is the resolver for the createActivity field.
+func (r *mutationResolver) CreateActivity(ctx context.Context, input model.NewActivity) (*model.Activity, error) {
+	return controller.CreateActivityHandler(ctx, input)
+}
+
+// CreateExpense is the resolver for the createExpense field.
+func (r *mutationResolver) CreateExpense(ctx context.Context, input model.NewExpense) (*model.Expense, error) {
+	return controller.CreateExpenseHandler(ctx, input)
 }
 
 // User is the resolver for the user field.
@@ -51,6 +71,22 @@ func (r *queryResolver) Participant(ctx context.Context, filter *model.Participa
 	return controller.GetParticipantHandler(ctx, filter, pagination)
 }
 
+// Expense is the resolver for the expense field.
+func (r *queryResolver) Expense(ctx context.Context, filter *model.ExpenseFilter, pagination *model.Pagination) ([]*model.Expense, error) {
+	return controller.GetExpenseHandler(ctx, filter, pagination)
+}
+
+// Activity is the resolver for the activity field.
+func (r *queryResolver) Activity(ctx context.Context, filter *model.ActivityFilter, pagination *model.Pagination) ([]*model.Activity, error) {
+	return controller.GetActivityHandler(ctx, filter, pagination)
+}
+
+// Activity returns ActivityResolver implementation.
+func (r *Resolver) Activity() ActivityResolver { return &activityResolver{r} }
+
+// Expense returns ExpenseResolver implementation.
+func (r *Resolver) Expense() ExpenseResolver { return &expenseResolver{r} }
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
@@ -60,6 +96,8 @@ func (r *Resolver) Participant() ParticipantResolver { return &participantResolv
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
+type activityResolver struct{ *Resolver }
+type expenseResolver struct{ *Resolver }
 type mutationResolver struct{ *Resolver }
 type participantResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

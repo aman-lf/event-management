@@ -92,3 +92,13 @@ models:
         resolver: true
       event:
         resolver: true
+  Expense:
+    model: github.com/aman-lf/event-management/graph/model.Expense
+    fields:
+      event:
+        resolver: true
+  Activity:
+    model: github.com/aman-lf/event-management/graph/model.Activity
+    fields:
+      event:
+        resolver: true

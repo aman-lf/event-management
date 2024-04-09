@@ -2,6 +2,14 @@
 
 package model
 
+type ActivityFilter struct {
+	ID        *string `json:"id,omitempty"`
+	Name      *string `json:"name,omitempty"`
+	StartTime *string `json:"startTime,omitempty"`
+	EndTime   *string `json:"endTime,omitempty"`
+	EventID   *string `json:"eventID,omitempty"`
+}
+
 type EventFilter struct {
 	ID        *string `json:"id,omitempty"`
 	Name      *string `json:"name,omitempty"`
@@ -9,6 +17,13 @@ type EventFilter struct {
 	EndDate   *string `json:"endDate,omitempty"`
 	Location  *string `json:"location,omitempty"`
 	Type      *string `json:"type,omitempty"`
+}
+
+type ExpenseFilter struct {
+	ID       *string `json:"id,omitempty"`
+	ItemName *string `json:"itemName,omitempty"`
+	Type     *string `json:"type,omitempty"`
+	EventID  *string `json:"eventID,omitempty"`
 }
 
 type Mutation struct {

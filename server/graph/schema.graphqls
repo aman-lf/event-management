@@ -28,6 +28,26 @@ type Participant {
   role: String!
 }
 
+type Expense {
+  id: ID!
+  itemName: String!
+  cost: Int!
+  description: String
+  type: String!
+  eventID: ID!
+  event: Event!
+}
+
+type Activity {
+  id: ID!
+  name: String!
+  startTime: String!
+  endTime: String!
+  description: String
+  eventID: ID!
+  event: Event!
+}
+
 input UserFilter {
   id: ID
   name: String
@@ -51,6 +71,21 @@ input ParticipantFilter {
   role: String
 }
 
+input ExpenseFilter {
+  id: ID
+  itemName: String
+  type: String
+  eventID: ID
+}
+
+input ActivityFilter {
+  id: ID
+  name: String
+  startTime: String
+  endTime: String
+  eventID: ID
+}
+
 input Pagination {
   limit: Int = 20
   offset: Int = 0
@@ -65,6 +100,8 @@ type Query {
     filter: ParticipantFilter
     pagination: Pagination
   ): [Participant!]!
+  expense(filter: ExpenseFilter, pagination: Pagination): [Expense!]!
+  activity(filter: ActivityFilter, pagination: Pagination): [Activity!]!
 }
 
 input NewEvent {
@@ -88,8 +125,26 @@ input NewParticipant {
   role: String!
 }
 
+input NewActivity {
+  name: String!
+  startTime: String!
+  endTime: String!
+  description: String
+  eventId: Int!
+}
+
+input NewExpense {
+  itemName: String!
+  cost: Int!
+  description: String
+  type: String!
+  eventID: Int!
+}
+
 type Mutation {
   createUser(input: NewUser!): User!
   createEvent(input: NewEvent!): Event!
   createParticipant(input: NewParticipant!): Participant!
+  createActivity(input: NewActivity!): Activity!
+  createExpense(input: NewExpense!): Expense!
 }
