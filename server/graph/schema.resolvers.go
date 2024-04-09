@@ -37,18 +37,18 @@ func (r *participantResolver) Event(ctx context.Context, obj *model.Participant)
 }
 
 // User is the resolver for the user field.
-func (r *queryResolver) User(ctx context.Context, options *model.UserQueryOptions) ([]*model.User, error) {
-	return controller.GetUsersHandler(ctx, options)
+func (r *queryResolver) User(ctx context.Context, filter *model.UserFilter, pagination *model.Pagination) ([]*model.User, error) {
+	return controller.GetUsersHandler(ctx, filter, pagination)
 }
 
 // Event is the resolver for the event field.
-func (r *queryResolver) Event(ctx context.Context, options *model.EventQueryOptions) ([]*model.Event, error) {
-	return controller.GetEventsHandler(ctx, options)
+func (r *queryResolver) Event(ctx context.Context, filter *model.EventFilter, pagination *model.Pagination) ([]*model.Event, error) {
+	return controller.GetEventsHandler(ctx, filter, pagination)
 }
 
 // Participant is the resolver for the participant field.
-func (r *queryResolver) Participant(ctx context.Context, options *model.ParticipantQueryOptions) ([]*model.Participant, error) {
-	return controller.GetParticipantHandler(ctx, options)
+func (r *queryResolver) Participant(ctx context.Context, filter *model.ParticipantFilter, pagination *model.Pagination) ([]*model.Participant, error) {
+	return controller.GetParticipantHandler(ctx, filter, pagination)
 }
 
 // Mutation returns MutationResolver implementation.

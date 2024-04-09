@@ -8,8 +8,8 @@ import (
 	"github.com/aman-lf/event-management/service"
 )
 
-func GetUsersHandler(ctx context.Context, options *graphModel.UserQueryOptions) ([]*graphModel.User, error) {
-	users, err := service.GetUsers(ctx, options)
+func GetUsersHandler(ctx context.Context, filter *graphModel.UserFilter, pagination *graphModel.Pagination) ([]*graphModel.User, error) {
+	users, err := service.GetUsers(ctx, filter, pagination)
 	if err != nil {
 		return nil, err
 	}

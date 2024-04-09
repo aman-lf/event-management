@@ -26,13 +26,12 @@ func CreateParticipant(ctx context.Context, input graphModel.NewParticipant) (*m
 	return &participant, nil
 }
 
-func GetParticipants(ctx context.Context, options *graphModel.ParticipantQueryOptions) ([]*model.Participant, error) {
+func GetParticipants(ctx context.Context, filter *graphModel.ParticipantFilter, pagination *graphModel.Pagination) ([]*model.Participant, error) {
 	var participants []*model.Participant
 
 	query := database.DB.Model(&model.Participant{})
 
-	if options != nil {
-		filter := options.Filter
+	if filter != nil {
 		if filter != nil {
 			if filter.ID != nil && *filter.ID != "" {
 				query = query.Where("id = ?", *filter.ID)
@@ -48,21 +47,8 @@ func GetParticipants(ctx context.Context, options *graphModel.ParticipantQueryOp
 			}
 		}
 
-		// Apply sorting
-		if options.SortBy != nil && *options.SortBy != "" {
-			sortColumn := "id" // Default sort column
-			if utils.ContainsString(participantSortableCol, *options.SortBy) {
-				sortColumn = *options.SortBy
-			}
-			order := "ASC" // Default sort order
-			if strings.ToUpper(*options.SortOrder) == "DESC" {
-				order = "DESC"
-			}
-			query = query.Order(sortColumn + " " + order)
-		}
-
-		// Apply limit and offset
-		query = query.Limit(*options.Limit).Offset(*options.Offset)
+		// Apply pagination and sort
+		query = utils.ApplyPagination(query, pagination, "id", participantSortableCol)
 	}
 
 	// Execute the query and fetch participants

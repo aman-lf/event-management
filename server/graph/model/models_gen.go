@@ -11,15 +11,14 @@ type EventFilter struct {
 	Type      *string `json:"type,omitempty"`
 }
 
-type EventQueryOptions struct {
-	Filter    *EventFilter `json:"filter,omitempty"`
-	Limit     *int         `json:"limit,omitempty"`
-	Offset    *int         `json:"offset,omitempty"`
-	SortBy    *string      `json:"sortBy,omitempty"`
-	SortOrder *string      `json:"sortOrder,omitempty"`
+type Mutation struct {
 }
 
-type Mutation struct {
+type Pagination struct {
+	Limit     *int    `json:"limit,omitempty"`
+	Offset    *int    `json:"offset,omitempty"`
+	SortBy    *string `json:"sortBy,omitempty"`
+	SortOrder *string `json:"sortOrder,omitempty"`
 }
 
 type ParticipantFilter struct {
@@ -27,14 +26,6 @@ type ParticipantFilter struct {
 	UserID  *string `json:"userId,omitempty"`
 	EventID *string `json:"eventId,omitempty"`
 	Role    *string `json:"role,omitempty"`
-}
-
-type ParticipantQueryOptions struct {
-	Filter    *ParticipantFilter `json:"filter,omitempty"`
-	Limit     *int               `json:"limit,omitempty"`
-	Offset    *int               `json:"offset,omitempty"`
-	SortBy    *string            `json:"sortBy,omitempty"`
-	SortOrder *string            `json:"sortOrder,omitempty"`
 }
 
 type Query struct {
@@ -45,12 +36,4 @@ type UserFilter struct {
 	Name    *string `json:"name,omitempty"`
 	Email   *string `json:"email,omitempty"`
 	PhoneNo *string `json:"phoneNo,omitempty"`
-}
-
-type UserQueryOptions struct {
-	Filter    *UserFilter `json:"filter,omitempty"`
-	Limit     *int        `json:"limit,omitempty"`
-	Offset    *int        `json:"offset,omitempty"`
-	SortBy    *string     `json:"sortBy,omitempty"`
-	SortOrder *string     `json:"sortOrder,omitempty"`
 }

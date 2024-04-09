@@ -51,24 +51,7 @@ input ParticipantFilter {
   role: String
 }
 
-input UserQueryOptions {
-  filter: UserFilter
-  limit: Int = 20
-  offset: Int = 0
-  sortBy: String
-  sortOrder: String
-}
-
-input EventQueryOptions {
-  filter: EventFilter
-  limit: Int = 20
-  offset: Int = 0
-  sortBy: String
-  sortOrder: String
-}
-
-input ParticipantQueryOptions {
-  filter: ParticipantFilter
+input Pagination {
   limit: Int = 20
   offset: Int = 0
   sortBy: String
@@ -76,9 +59,12 @@ input ParticipantQueryOptions {
 }
 
 type Query {
-  user(options: UserQueryOptions): [User!]!
-  event(options: EventQueryOptions): [Event!]!
-  participant(options: ParticipantQueryOptions): [Participant!]!
+  user(filter: UserFilter, pagination: Pagination): [User!]!
+  event(filter: EventFilter, pagination: Pagination): [Event!]!
+  participant(
+    filter: ParticipantFilter
+    pagination: Pagination
+  ): [Participant!]!
 }
 
 input NewEvent {

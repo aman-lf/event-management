@@ -27,13 +27,12 @@ func CreateUser(ctx context.Context, input graphModel.NewUser) (*model.User, err
 	return &user, result.Error
 }
 
-func GetUsers(ctx context.Context, options *graphModel.UserQueryOptions) ([]*model.User, error) {
+func GetUsers(ctx context.Context, filter *graphModel.UserFilter, pagination *graphModel.Pagination) ([]*model.User, error) {
 	var users []*model.User
 
 	query := database.DB.Model(&model.User{})
 
-	if options != nil {
-		filter := options.Filter
+	if filter != nil {
 		if filter != nil {
 			if filter.ID != nil && *filter.ID != "" {
 				query = query.Where("id = ?", *filter.ID)
@@ -49,21 +48,8 @@ func GetUsers(ctx context.Context, options *graphModel.UserQueryOptions) ([]*mod
 			}
 		}
 
-		// Apply sorting
-		sortColumn := "id" // Default sort column
-		if options.SortBy != nil && *options.SortBy != "" {
-			if utils.ContainsString(userSortableCol, *options.SortBy) {
-				sortColumn = *options.SortBy
-			}
-		}
-		order := "ASC" // Default sort order
-		if options.SortOrder != nil && strings.ToUpper(*options.SortOrder) == "DESC" {
-			order = "DESC"
-		}
-		query = query.Order(sortColumn + " " + order)
-
-		// Apply limit and offset
-		query = query.Limit(*options.Limit).Offset(*options.Offset)
+		// Apply pagination and sort
+		query = utils.ApplyPagination(query, pagination, "id", userSortableCol)
 	}
 
 	// Execute the query and fetch users

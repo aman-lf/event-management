@@ -27,8 +27,8 @@ func CreateEvent(ctx context.Context, input graphModel.NewEvent) (*model.Event, 
 		StartDate:   &startDate,
 		EndDate:     &endDate,
 		Location:    input.Location,
-		Type:        *input.Type,
-		Description: *input.Description,
+		Type:        input.Type,
+		Description: input.Description,
 	}
 
 	result := database.DB.Create(&event)
@@ -39,13 +39,12 @@ func CreateEvent(ctx context.Context, input graphModel.NewEvent) (*model.Event, 
 	return &event, err
 }
 
-func GetEvents(ctx context.Context, options *graphModel.EventQueryOptions) ([]*model.Event, error) {
+func GetEvents(ctx context.Context, filter *graphModel.EventFilter, pagination *graphModel.Pagination) ([]*model.Event, error) {
 	var events []*model.Event
 
 	query := database.DB.Model(&model.Event{})
 
-	if options != nil {
-		filter := options.Filter
+	if filter != nil {
 		if filter != nil {
 			if filter.ID != nil && *filter.ID != "" {
 				query = query.Where("id = ?", *filter.ID)
@@ -67,21 +66,8 @@ func GetEvents(ctx context.Context, options *graphModel.EventQueryOptions) ([]*m
 			}
 		}
 
-		// Apply sorting
-		if options.SortBy != nil && *options.SortBy != "" {
-			sortColumn := "id" // Default sort column
-			if utils.ContainsString(eventSortableCol, *options.SortBy) {
-				sortColumn = *options.SortBy
-			}
-			order := "ASC" // Default sort order
-			if strings.ToUpper(*options.SortOrder) == "DESC" {
-				order = "DESC"
-			}
-			query = query.Order(sortColumn + " " + order)
-		}
-
-		// Apply limit and offset
-		query = query.Limit(*options.Limit).Offset(*options.Offset)
+		// Apply pagination and sort
+		query = utils.ApplyPagination(query, pagination, "id", eventSortableCol)
 	}
 
 	// Execute the query and fetch events

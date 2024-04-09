@@ -74,9 +74,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Event       func(childComplexity int, options *model.EventQueryOptions) int
-		Participant func(childComplexity int, options *model.ParticipantQueryOptions) int
-		User        func(childComplexity int, options *model.UserQueryOptions) int
+		Event       func(childComplexity int, filter *model.EventFilter, pagination *model.Pagination) int
+		Participant func(childComplexity int, filter *model.ParticipantFilter, pagination *model.Pagination) int
+		User        func(childComplexity int, filter *model.UserFilter, pagination *model.Pagination) int
 	}
 
 	User struct {
@@ -98,9 +98,9 @@ type ParticipantResolver interface {
 	Event(ctx context.Context, obj *model.Participant) (*model.Event, error)
 }
 type QueryResolver interface {
-	User(ctx context.Context, options *model.UserQueryOptions) ([]*model.User, error)
-	Event(ctx context.Context, options *model.EventQueryOptions) ([]*model.Event, error)
-	Participant(ctx context.Context, options *model.ParticipantQueryOptions) ([]*model.Participant, error)
+	User(ctx context.Context, filter *model.UserFilter, pagination *model.Pagination) ([]*model.User, error)
+	Event(ctx context.Context, filter *model.EventFilter, pagination *model.Pagination) ([]*model.Event, error)
+	Participant(ctx context.Context, filter *model.ParticipantFilter, pagination *model.Pagination) ([]*model.Participant, error)
 }
 
 type executableSchema struct {
@@ -259,7 +259,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Event(childComplexity, args["options"].(*model.EventQueryOptions)), true
+		return e.complexity.Query.Event(childComplexity, args["filter"].(*model.EventFilter), args["pagination"].(*model.Pagination)), true
 
 	case "Query.participant":
 		if e.complexity.Query.Participant == nil {
@@ -271,7 +271,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Participant(childComplexity, args["options"].(*model.ParticipantQueryOptions)), true
+		return e.complexity.Query.Participant(childComplexity, args["filter"].(*model.ParticipantFilter), args["pagination"].(*model.Pagination)), true
 
 	case "Query.user":
 		if e.complexity.Query.User == nil {
@@ -283,7 +283,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.User(childComplexity, args["options"].(*model.UserQueryOptions)), true
+		return e.complexity.Query.User(childComplexity, args["filter"].(*model.UserFilter), args["pagination"].(*model.Pagination)), true
 
 	case "User.email":
 		if e.complexity.User.Email == nil {
@@ -322,14 +322,12 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputEventFilter,
-		ec.unmarshalInputEventQueryOptions,
 		ec.unmarshalInputNewEvent,
 		ec.unmarshalInputNewParticipant,
 		ec.unmarshalInputNewUser,
+		ec.unmarshalInputPagination,
 		ec.unmarshalInputParticipantFilter,
-		ec.unmarshalInputParticipantQueryOptions,
 		ec.unmarshalInputUserFilter,
-		ec.unmarshalInputUserQueryOptions,
 	)
 	first := true
 
@@ -509,45 +507,72 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_event_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.EventQueryOptions
-	if tmp, ok := rawArgs["options"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("options"))
-		arg0, err = ec.unmarshalOEventQueryOptions2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐEventQueryOptions(ctx, tmp)
+	var arg0 *model.EventFilter
+	if tmp, ok := rawArgs["filter"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+		arg0, err = ec.unmarshalOEventFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐEventFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["options"] = arg0
+	args["filter"] = arg0
+	var arg1 *model.Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
+		arg1, err = ec.unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg1
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_participant_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.ParticipantQueryOptions
-	if tmp, ok := rawArgs["options"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("options"))
-		arg0, err = ec.unmarshalOParticipantQueryOptions2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐParticipantQueryOptions(ctx, tmp)
+	var arg0 *model.ParticipantFilter
+	if tmp, ok := rawArgs["filter"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+		arg0, err = ec.unmarshalOParticipantFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐParticipantFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["options"] = arg0
+	args["filter"] = arg0
+	var arg1 *model.Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
+		arg1, err = ec.unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg1
 	return args, nil
 }
 
 func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *model.UserQueryOptions
-	if tmp, ok := rawArgs["options"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("options"))
-		arg0, err = ec.unmarshalOUserQueryOptions2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐUserQueryOptions(ctx, tmp)
+	var arg0 *model.UserFilter
+	if tmp, ok := rawArgs["filter"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+		arg0, err = ec.unmarshalOUserFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐUserFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["options"] = arg0
+	args["filter"] = arg0
+	var arg1 *model.Pagination
+	if tmp, ok := rawArgs["pagination"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("pagination"))
+		arg1, err = ec.unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["pagination"] = arg1
 	return args, nil
 }
 
@@ -1400,7 +1425,7 @@ func (ec *executionContext) _Query_user(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().User(rctx, fc.Args["options"].(*model.UserQueryOptions))
+		return ec.resolvers.Query().User(rctx, fc.Args["filter"].(*model.UserFilter), fc.Args["pagination"].(*model.Pagination))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1465,7 +1490,7 @@ func (ec *executionContext) _Query_event(ctx context.Context, field graphql.Coll
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Event(rctx, fc.Args["options"].(*model.EventQueryOptions))
+		return ec.resolvers.Query().Event(rctx, fc.Args["filter"].(*model.EventFilter), fc.Args["pagination"].(*model.Pagination))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1536,7 +1561,7 @@ func (ec *executionContext) _Query_participant(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Participant(rctx, fc.Args["options"].(*model.ParticipantQueryOptions))
+		return ec.resolvers.Query().Participant(rctx, fc.Args["filter"].(*model.ParticipantFilter), fc.Args["pagination"].(*model.Pagination))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3731,68 +3756,6 @@ func (ec *executionContext) unmarshalInputEventFilter(ctx context.Context, obj i
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputEventQueryOptions(ctx context.Context, obj interface{}) (model.EventQueryOptions, error) {
-	var it model.EventQueryOptions
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	if _, present := asMap["limit"]; !present {
-		asMap["limit"] = 20
-	}
-	if _, present := asMap["offset"]; !present {
-		asMap["offset"] = 0
-	}
-
-	fieldsInOrder := [...]string{"filter", "limit", "offset", "sortBy", "sortOrder"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "filter":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			data, err := ec.unmarshalOEventFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐEventFilter(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Filter = data
-		case "limit":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Limit = data
-		case "offset":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Offset = data
-		case "sortBy":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SortBy = data
-		case "sortOrder":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortOrder"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SortOrder = data
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputNewEvent(ctx context.Context, obj interface{}) (model.NewEvent, error) {
 	var it model.NewEvent
 	asMap := map[string]interface{}{}
@@ -3937,6 +3900,61 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputPagination(ctx context.Context, obj interface{}) (model.Pagination, error) {
+	var it model.Pagination
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	if _, present := asMap["limit"]; !present {
+		asMap["limit"] = 20
+	}
+	if _, present := asMap["offset"]; !present {
+		asMap["offset"] = 0
+	}
+
+	fieldsInOrder := [...]string{"limit", "offset", "sortBy", "sortOrder"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "limit":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Limit = data
+		case "offset":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Offset = data
+		case "sortBy":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SortBy = data
+		case "sortOrder":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortOrder"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.SortOrder = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputParticipantFilter(ctx context.Context, obj interface{}) (model.ParticipantFilter, error) {
 	var it model.ParticipantFilter
 	asMap := map[string]interface{}{}
@@ -3985,68 +4003,6 @@ func (ec *executionContext) unmarshalInputParticipantFilter(ctx context.Context,
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputParticipantQueryOptions(ctx context.Context, obj interface{}) (model.ParticipantQueryOptions, error) {
-	var it model.ParticipantQueryOptions
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	if _, present := asMap["limit"]; !present {
-		asMap["limit"] = 20
-	}
-	if _, present := asMap["offset"]; !present {
-		asMap["offset"] = 0
-	}
-
-	fieldsInOrder := [...]string{"filter", "limit", "offset", "sortBy", "sortOrder"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "filter":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			data, err := ec.unmarshalOParticipantFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐParticipantFilter(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Filter = data
-		case "limit":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Limit = data
-		case "offset":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Offset = data
-		case "sortBy":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SortBy = data
-		case "sortOrder":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortOrder"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SortOrder = data
-		}
-	}
-
-	return it, nil
-}
-
 func (ec *executionContext) unmarshalInputUserFilter(ctx context.Context, obj interface{}) (model.UserFilter, error) {
 	var it model.UserFilter
 	asMap := map[string]interface{}{}
@@ -4089,68 +4045,6 @@ func (ec *executionContext) unmarshalInputUserFilter(ctx context.Context, obj in
 				return it, err
 			}
 			it.PhoneNo = data
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputUserQueryOptions(ctx context.Context, obj interface{}) (model.UserQueryOptions, error) {
-	var it model.UserQueryOptions
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	if _, present := asMap["limit"]; !present {
-		asMap["limit"] = 20
-	}
-	if _, present := asMap["offset"]; !present {
-		asMap["offset"] = 0
-	}
-
-	fieldsInOrder := [...]string{"filter", "limit", "offset", "sortBy", "sortOrder"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "filter":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-			data, err := ec.unmarshalOUserFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐUserFilter(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Filter = data
-		case "limit":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Limit = data
-		case "offset":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
-			data, err := ec.unmarshalOInt2ᚖint(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.Offset = data
-		case "sortBy":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortBy"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SortBy = data
-		case "sortOrder":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sortOrder"))
-			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.SortOrder = data
 		}
 	}
 
@@ -5464,14 +5358,6 @@ func (ec *executionContext) unmarshalOEventFilter2ᚖgithubᚗcomᚋamanᚑlfᚋ
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalOEventQueryOptions2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐEventQueryOptions(ctx context.Context, v interface{}) (*model.EventQueryOptions, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputEventQueryOptions(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
 	if v == nil {
 		return nil, nil
@@ -5504,19 +5390,19 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
+func (ec *executionContext) unmarshalOPagination2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐPagination(ctx context.Context, v interface{}) (*model.Pagination, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputPagination(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOParticipantFilter2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐParticipantFilter(ctx context.Context, v interface{}) (*model.ParticipantFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputParticipantFilter(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalOParticipantQueryOptions2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐParticipantQueryOptions(ctx context.Context, v interface{}) (*model.ParticipantQueryOptions, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputParticipantQueryOptions(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -5541,14 +5427,6 @@ func (ec *executionContext) unmarshalOUserFilter2ᚖgithubᚗcomᚋamanᚑlfᚋe
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputUserFilter(ctx, v)
-	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalOUserQueryOptions2ᚖgithubᚗcomᚋamanᚑlfᚋeventᚑmanagementᚋgraphᚋmodelᚐUserQueryOptions(ctx context.Context, v interface{}) (*model.UserQueryOptions, error) {
-	if v == nil {
-		return nil, nil
-	}
-	res, err := ec.unmarshalInputUserQueryOptions(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

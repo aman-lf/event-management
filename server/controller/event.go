@@ -4,12 +4,14 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/aman-lf/event-management/data"
 	graphModel "github.com/aman-lf/event-management/graph/model"
+	"github.com/aman-lf/event-management/middleware"
 	"github.com/aman-lf/event-management/service"
 )
 
-func GetEventsHandler(ctx context.Context, options *graphModel.EventQueryOptions) ([]*graphModel.Event, error) {
-	events, err := service.GetEvents(ctx, options)
+func GetEventsHandler(ctx context.Context, filter *graphModel.EventFilter, pagination *graphModel.Pagination) ([]*graphModel.Event, error) {
+	events, err := service.GetEvents(ctx, filter, pagination)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +46,8 @@ func GetEventByIdHandler(ctx context.Context, id int) (*graphModel.Event, error)
 		StartDate:   event.StartDate.Format("2006-01-02"),
 		EndDate:     event.EndDate.Format("2006-01-02"),
 		Location:    event.Location,
-		Type:        &event.Type,
-		Description: &event.Description,
+		Type:        event.Type,
+		Description: event.Description,
 	}
 
 	return &returnEvent, nil
@@ -57,6 +59,14 @@ func CreateEventHandler(ctx context.Context, input graphModel.NewEvent) (*graphM
 		return nil, err
 	}
 
+	userId := middleware.GetCurrentUserIDFromContext(ctx)
+	newParticipant := graphModel.NewParticipant{
+		UserID:  *userId,
+		EventID: int(event.ID),
+		Role:    data.ADMIN,
+	}
+	service.CreateParticipant(ctx, newParticipant)
+
 	eventID := strconv.FormatUint(uint64(event.ID), 10)
 	return &graphModel.Event{
 		ID:          eventID,
@@ -64,7 +74,7 @@ func CreateEventHandler(ctx context.Context, input graphModel.NewEvent) (*graphM
 		StartDate:   event.StartDate.Format("2006-01-02"),
 		EndDate:     event.EndDate.Format("2006-01-02"),
 		Location:    event.Location,
-		Type:        &event.Type,
-		Description: &event.Description,
+		Type:        event.Type,
+		Description: event.Description,
 	}, nil
 }

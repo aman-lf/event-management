@@ -32,6 +32,7 @@ func main() {
 	router.Use(gin.Recovery())
 	router.Use(middleware.JSONLoggerMiddleware())
 	router.Use(middleware.CORSMiddleware())
+	router.Use(middleware.Auth())
 
 	addAPIRoutes(router)
 	router.Run(fmt.Sprintf("%s:%s", config.Cfg.Host, config.Cfg.Port))

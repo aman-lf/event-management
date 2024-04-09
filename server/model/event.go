@@ -12,6 +12,6 @@ type Event struct {
 	StartDate   *time.Time
 	EndDate     *time.Time
 	Location    string
-	Type        string
-	Description string
+	Type        *string
+	Description *string
 }
