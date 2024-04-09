@@ -72,3 +72,53 @@ func GetActivities(ctx context.Context, filter *graphModel.ActivityFilter, pagin
 
 	return activities, nil
 }
+
+func UpdateActivity(ctx context.Context, id int, input graphModel.UpdateActivity) (*model.Activity, error) {
+	var activity model.Activity
+	result := database.DB.First(&activity, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Update activity fields
+	if input.Name != nil && *input.Name != "" {
+		activity.Name = *input.Name
+	}
+	if input.StartTime != nil && *input.StartTime != "" {
+		startTime, err := time.Parse("2006-01-02T15:04:05", *input.StartTime)
+		if err != nil {
+			return nil, err
+		}
+		activity.StartTime = &startTime
+	}
+	if input.EndTime != nil && *input.EndTime != "" {
+		endTime, err := time.Parse("2006-01-02T15:04:05", *input.EndTime)
+		if err != nil {
+			return nil, err
+		}
+		activity.EndTime = &endTime
+	}
+	if input.Description != nil {
+		activity.Description = *input.Description
+	}
+	if input.EventID != nil {
+		activity.EventID = uint(*input.EventID)
+	}
+
+	// Save updated activity
+	result = database.DB.Save(&activity)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &activity, nil
+}
+
+func DeleteActivity(ctx context.Context, id int) (bool, error) {
+	result := database.DB.Delete(&model.Activity{}, id)
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return true, nil
+}

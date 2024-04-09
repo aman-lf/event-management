@@ -46,6 +46,57 @@ func (r *mutationResolver) CreateExpense(ctx context.Context, input model.NewExp
 	return controller.CreateExpenseHandler(ctx, input)
 }
 
+// UpdateUser is the resolver for the updateUser field.
+func (r *mutationResolver) UpdateUser(ctx context.Context, id string, input model.UpdateUser) (*model.User, error) {
+	return controller.UpdateUserHandler(ctx, id, input)
+}
+
+// DeleteUser is the resolver for the deleteUser field.
+func (r *mutationResolver) DeleteUser(ctx context.Context, id string) (bool, error) {
+	return controller.DeleteUserHandler(ctx, id)
+}
+
+// UpdateEvent is the resolver for the updateEvent field.
+func (r *mutationResolver) UpdateEvent(ctx context.Context, id string, input model.UpdateEvent) (*model.Event, error) {
+	return controller.UpdateEventHandler(ctx, id, input)
+
+}
+
+// DeleteEvent is the resolver for the deleteEvent field.
+func (r *mutationResolver) DeleteEvent(ctx context.Context, id string) (bool, error) {
+	return controller.DeleteEventHandler(ctx, id)
+}
+
+// UpdateParticipant is the resolver for the updateParticipant field.
+func (r *mutationResolver) UpdateParticipant(ctx context.Context, id string, input model.UpdateParticipant) (*model.Participant, error) {
+	return controller.UpdateParticipantHandler(ctx, id, input)
+}
+
+// DeleteParticipant is the resolver for the deleteParticipant field.
+func (r *mutationResolver) DeleteParticipant(ctx context.Context, id string) (bool, error) {
+	return controller.DeleteParticipantHandler(ctx, id)
+}
+
+// UpdateActivity is the resolver for the updateActivity field.
+func (r *mutationResolver) UpdateActivity(ctx context.Context, id string, input model.UpdateActivity) (*model.Activity, error) {
+	return controller.UpdateActivityHandler(ctx, id, input)
+}
+
+// DeleteActivity is the resolver for the deleteActivity field.
+func (r *mutationResolver) DeleteActivity(ctx context.Context, id string) (bool, error) {
+	return controller.DeleteActivityHandler(ctx, id)
+}
+
+// UpdateExpense is the resolver for the updateExpense field.
+func (r *mutationResolver) UpdateExpense(ctx context.Context, id string, input model.UpdateExpense) (*model.Expense, error) {
+	return controller.UpdateExpenseHandler(ctx, id, input)
+}
+
+// DeleteExpense is the resolver for the deleteExpense field.
+func (r *mutationResolver) DeleteExpense(ctx context.Context, id string) (bool, error) {
+	return controller.DeleteExpenseHandler(ctx, id)
+}
+
 // User is the resolver for the user field.
 func (r *participantResolver) User(ctx context.Context, obj *model.Participant) (*model.User, error) {
 	return controller.GetUserByIdHandler(ctx, obj.UserId)

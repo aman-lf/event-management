@@ -32,19 +32,17 @@ func GetParticipants(ctx context.Context, filter *graphModel.ParticipantFilter, 
 	query := database.DB.Model(&model.Participant{})
 
 	if filter != nil {
-		if filter != nil {
-			if filter.ID != nil && *filter.ID != "" {
-				query = query.Where("id = ?", *filter.ID)
-			}
-			if filter.UserID != nil && *filter.UserID != "" {
-				query = query.Where("user_id = ?", *filter.UserID)
-			}
-			if filter.EventID != nil && *filter.EventID != "" {
-				query = query.Where("event_id = ?", *filter.EventID)
-			}
-			if filter.Role != nil && *filter.Role != "" {
-				query = query.Where("LOWER(role) ILIKE ?", "%"+strings.ToLower(*filter.Role)+"%")
-			}
+		if filter.ID != nil && *filter.ID != "" {
+			query = query.Where("id = ?", *filter.ID)
+		}
+		if filter.UserID != nil && *filter.UserID != "" {
+			query = query.Where("user_id = ?", *filter.UserID)
+		}
+		if filter.EventID != nil && *filter.EventID != "" {
+			query = query.Where("event_id = ?", *filter.EventID)
+		}
+		if filter.Role != nil && *filter.Role != "" {
+			query = query.Where("LOWER(role) ILIKE ?", "%"+strings.ToLower(*filter.Role)+"%")
 		}
 
 		// Apply pagination and sort
@@ -59,4 +57,40 @@ func GetParticipants(ctx context.Context, filter *graphModel.ParticipantFilter, 
 	}
 
 	return participants, nil
+}
+
+func UpdateParticipant(ctx context.Context, id int, input graphModel.UpdateParticipant) (*model.Participant, error) {
+	var participant model.Participant
+	result := database.DB.First(&participant, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Update participant fields
+	if input.UserID != nil {
+		participant.UserID = uint(*input.UserID)
+	}
+	if input.EventID != nil {
+		participant.EventID = uint(*input.EventID)
+	}
+	if input.Role != nil {
+		participant.Role = *input.Role
+	}
+
+	// Save updated participant
+	result = database.DB.Save(&participant)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &participant, nil
+}
+
+func DeleteParticipant(ctx context.Context, id int) (bool, error) {
+	result := database.DB.Delete(&model.Participant{}, id)
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return true, nil
 }

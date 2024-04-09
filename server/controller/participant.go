@@ -41,3 +41,24 @@ func CreateParticipantHandler(ctx context.Context, input graphModel.NewParticipa
 		Role:    input.Role,
 	}, nil
 }
+
+func UpdateParticipantHandler(ctx context.Context, idStr string, input graphModel.UpdateParticipant) (*graphModel.Participant, error) {
+	id, _ := strconv.Atoi(idStr)
+	participant, err := service.UpdateParticipant(ctx, id, input)
+	if err != nil {
+		return nil, err
+	}
+
+	participantID := strconv.FormatUint(uint64(participant.ID), 10)
+	return &graphModel.Participant{
+		ID:      participantID,
+		UserId:  int(participant.UserID),
+		EventID: int(participant.EventID),
+		Role:    participant.Role,
+	}, nil
+}
+
+func DeleteParticipantHandler(ctx context.Context, idStr string) (bool, error) {
+	id, _ := strconv.Atoi(idStr)
+	return service.DeleteParticipant(ctx, id)
+}

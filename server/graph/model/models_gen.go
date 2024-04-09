@@ -46,6 +46,37 @@ type ParticipantFilter struct {
 type Query struct {
 }
 
+type UpdateActivity struct {
+	Name        *string `json:"name,omitempty"`
+	StartTime   *string `json:"startTime,omitempty"`
+	EndTime     *string `json:"endTime,omitempty"`
+	Description *string `json:"description,omitempty"`
+	EventID     *int    `json:"eventId,omitempty"`
+}
+
+type UpdateEvent struct {
+	Name        *string `json:"name,omitempty"`
+	StartDate   *string `json:"startDate,omitempty"`
+	EndDate     *string `json:"endDate,omitempty"`
+	Location    *string `json:"location,omitempty"`
+	Type        *string `json:"type,omitempty"`
+	Description *string `json:"description,omitempty"`
+}
+
+type UpdateExpense struct {
+	ItemName    *string `json:"itemName,omitempty"`
+	Cost        *int    `json:"cost,omitempty"`
+	Description *string `json:"description,omitempty"`
+	Type        *string `json:"type,omitempty"`
+	EventID     *int    `json:"eventID,omitempty"`
+}
+
+type UpdateParticipant struct {
+	UserID  *int    `json:"userId,omitempty"`
+	EventID *int    `json:"eventId,omitempty"`
+	Role    *string `json:"role,omitempty"`
+}
+
 type UserFilter struct {
 	ID      *string `json:"id,omitempty"`
 	Name    *string `json:"name,omitempty"`

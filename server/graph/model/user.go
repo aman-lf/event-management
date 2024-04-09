@@ -12,3 +12,9 @@ type NewUser struct {
 	Email   string  `json:"email"`
 	PhoneNo *string `json:"phoneNo,omitempty"`
 }
+
+type UpdateUser struct {
+	Name    *string `json:"name,omitempty"`
+	Email   *string `json:"email,omitempty"`
+	PhoneNo *string `json:"phoneNo,omitempty"`
+}

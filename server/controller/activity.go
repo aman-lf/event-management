@@ -45,3 +45,26 @@ func CreateActivityHandler(ctx context.Context, input graphModel.NewActivity) (*
 		EventID:     int(activity.EventID),
 	}, nil
 }
+
+func UpdateActivityHandler(ctx context.Context, idStr string, input graphModel.UpdateActivity) (*graphModel.Activity, error) {
+	id, _ := strconv.Atoi(idStr)
+	activity, err := service.UpdateActivity(ctx, id, input)
+	if err != nil {
+		return nil, err
+	}
+
+	activityID := strconv.FormatUint(uint64(activity.ID), 10)
+	return &graphModel.Activity{
+		ID:          activityID,
+		Name:        activity.Name,
+		StartTime:   activity.StartTime.Format("2006-01-02T15:04:05"),
+		EndTime:     activity.EndTime.Format("2006-01-02T15:04:05"),
+		Description: &activity.Description,
+		EventID:     int(activity.EventID),
+	}, nil
+}
+
+func DeleteActivityHandler(ctx context.Context, idStr string) (bool, error) {
+	id, _ := strconv.Atoi(idStr)
+	return service.DeleteActivity(ctx, id)
+}

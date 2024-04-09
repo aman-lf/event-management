@@ -45,25 +45,23 @@ func GetEvents(ctx context.Context, filter *graphModel.EventFilter, pagination *
 	query := database.DB.Model(&model.Event{})
 
 	if filter != nil {
-		if filter != nil {
-			if filter.ID != nil && *filter.ID != "" {
-				query = query.Where("id = ?", *filter.ID)
-			}
-			if filter.Name != nil && *filter.Name != "" {
-				query = query.Where("LOWER(name) ILIKE ?", "%"+strings.ToLower(*filter.Name)+"%")
-			}
-			if filter.StartDate != nil && *filter.StartDate != "" {
-				query = query.Where("start_date = ?", *filter.StartDate)
-			}
-			if filter.EndDate != nil && *filter.EndDate != "" {
-				query = query.Where("end_date = ?", *filter.EndDate)
-			}
-			if filter.Location != nil && *filter.Location != "" {
-				query = query.Where("LOWER(location) ILIKE ?", "%"+strings.ToLower(*filter.Location)+"%")
-			}
-			if filter.Type != nil && *filter.Type != "" {
-				query = query.Where("LOWER(type) ILIKE ?", "%"+strings.ToLower(*filter.Type)+"%")
-			}
+		if filter.ID != nil && *filter.ID != "" {
+			query = query.Where("id = ?", *filter.ID)
+		}
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("LOWER(name) ILIKE ?", "%"+strings.ToLower(*filter.Name)+"%")
+		}
+		if filter.StartDate != nil && *filter.StartDate != "" {
+			query = query.Where("start_date = ?", *filter.StartDate)
+		}
+		if filter.EndDate != nil && *filter.EndDate != "" {
+			query = query.Where("end_date = ?", *filter.EndDate)
+		}
+		if filter.Location != nil && *filter.Location != "" {
+			query = query.Where("LOWER(location) ILIKE ?", "%"+strings.ToLower(*filter.Location)+"%")
+		}
+		if filter.Type != nil && *filter.Type != "" {
+			query = query.Where("LOWER(type) ILIKE ?", "%"+strings.ToLower(*filter.Type)+"%")
 		}
 
 		// Apply pagination and sort
@@ -89,4 +87,56 @@ func GetEventById(ctx context.Context, id int) (*model.Event, error) {
 	}
 
 	return event, nil
+}
+func UpdateEvent(ctx context.Context, id int, input graphModel.UpdateEvent) (*model.Event, error) {
+	var event model.Event
+	result := database.DB.First(&event, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Update event fields
+	if input.Name != nil && *input.Name != "" {
+		event.Name = *input.Name
+	}
+	if input.StartDate != nil && *input.StartDate != "" {
+		startDate, err := time.Parse("2006-01-02", *input.StartDate)
+		if err != nil {
+			return nil, err
+		}
+		event.StartDate = &startDate
+	}
+	if input.EndDate != nil && *input.EndDate != "" {
+		endDate, err := time.Parse("2006-01-02", *input.EndDate)
+		if err != nil {
+			return nil, err
+		}
+		event.EndDate = &endDate
+	}
+	if input.Location != nil && *input.Location != "" {
+		event.Location = *input.Location
+	}
+	if input.Type != nil && *input.Type != "" {
+		event.Type = input.Type
+	}
+	if input.Description != nil {
+		event.Description = input.Description
+	}
+
+	// Save updated event
+	result = database.DB.Save(&event)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &event, nil
+}
+
+func DeleteEvent(ctx context.Context, id int) (bool, error) {
+	result := database.DB.Delete(&model.Event{}, id)
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return true, nil
 }

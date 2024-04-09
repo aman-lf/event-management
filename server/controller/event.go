@@ -78,3 +78,27 @@ func CreateEventHandler(ctx context.Context, input graphModel.NewEvent) (*graphM
 		Description: event.Description,
 	}, nil
 }
+
+func UpdateEventHandler(ctx context.Context, idStr string, input graphModel.UpdateEvent) (*graphModel.Event, error) {
+	id, _ := strconv.Atoi(idStr)
+	event, err := service.UpdateEvent(ctx, id, input)
+	if err != nil {
+		return nil, err
+	}
+
+	eventID := strconv.FormatUint(uint64(event.ID), 10)
+	return &graphModel.Event{
+		ID:          eventID,
+		Name:        event.Name,
+		StartDate:   event.StartDate.Format("2006-01-02"),
+		EndDate:     event.EndDate.Format("2006-01-02"),
+		Location:    event.Location,
+		Type:        event.Type,
+		Description: event.Description,
+	}, nil
+}
+
+func DeleteEventHandler(ctx context.Context, idStr string) (bool, error) {
+	id, _ := strconv.Atoi(idStr)
+	return service.DeleteEvent(ctx, id)
+}

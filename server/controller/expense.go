@@ -45,3 +45,26 @@ func CreateExpenseHandler(ctx context.Context, input graphModel.NewExpense) (*gr
 		EventID:     int(expense.EventID),
 	}, nil
 }
+
+func UpdateExpenseHandler(ctx context.Context, idStr string, input graphModel.UpdateExpense) (*graphModel.Expense, error) {
+	id, _ := strconv.Atoi(idStr)
+	expense, err := service.UpdateExpense(ctx, id, input)
+	if err != nil {
+		return nil, err
+	}
+
+	expenseID := strconv.FormatUint(uint64(expense.ID), 10)
+	return &graphModel.Expense{
+		ID:          expenseID,
+		ItemName:    expense.ItemName,
+		Cost:        expense.Cost,
+		Description: expense.Description,
+		Type:        expense.Type,
+		EventID:     int(expense.EventID),
+	}, nil
+}
+
+func DeleteExpenseHandler(ctx context.Context, idStr string) (bool, error) {
+	id, _ := strconv.Atoi(idStr)
+	return service.DeleteExpense(ctx, id)
+}

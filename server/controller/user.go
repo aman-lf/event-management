@@ -59,3 +59,24 @@ func CreateUserHandler(ctx context.Context, input graphModel.NewUser) (*graphMod
 		PhoneNo: *user.PhoneNo,
 	}, nil
 }
+
+func UpdateUserHandler(ctx context.Context, idStr string, input graphModel.UpdateUser) (*graphModel.User, error) {
+	id, _ := strconv.Atoi(idStr)
+	user, err := service.UpdateUser(ctx, id, input)
+	if err != nil {
+		return nil, err
+	}
+
+	userID := strconv.FormatUint(uint64(user.ID), 10)
+	return &graphModel.User{
+		ID:      userID,
+		Name:    user.Name,
+		Email:   user.Email,
+		PhoneNo: *user.PhoneNo,
+	}, nil
+}
+
+func DeleteUserHandler(ctx context.Context, idStr string) (bool, error) {
+	id, _ := strconv.Atoi(idStr)
+	return service.DeleteUser(ctx, id)
+}

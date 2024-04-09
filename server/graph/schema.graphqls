@@ -141,10 +141,62 @@ input NewExpense {
   eventID: Int!
 }
 
+input UpdateUser {
+  name: String
+  email: String
+  phoneNo: String
+}
+
+input UpdateEvent {
+  name: String
+  startDate: String
+  endDate: String
+  location: String
+  type: String
+  description: String
+}
+
+input UpdateParticipant {
+  userId: Int
+  eventId: Int
+  role: String
+}
+
+input UpdateActivity {
+  name: String
+  startTime: String
+  endTime: String
+  description: String
+  eventId: Int
+}
+
+input UpdateExpense {
+  itemName: String
+  cost: Int
+  description: String
+  type: String
+  eventID: Int
+}
+
 type Mutation {
   createUser(input: NewUser!): User!
   createEvent(input: NewEvent!): Event!
   createParticipant(input: NewParticipant!): Participant!
   createActivity(input: NewActivity!): Activity!
   createExpense(input: NewExpense!): Expense!
+
+  updateUser(id: ID!, input: UpdateUser!): User!
+  deleteUser(id: ID!): Boolean!
+
+  updateEvent(id: ID!, input: UpdateEvent!): Event!
+  deleteEvent(id: ID!): Boolean!
+
+  updateParticipant(id: ID!, input: UpdateParticipant!): Participant!
+  deleteParticipant(id: ID!): Boolean!
+
+  updateActivity(id: ID!, input: UpdateActivity!): Activity!
+  deleteActivity(id: ID!): Boolean!
+
+  updateExpense(id: ID!, input: UpdateExpense!): Expense!
+  deleteExpense(id: ID!): Boolean!
 }

@@ -60,3 +60,45 @@ func GetExpenses(ctx context.Context, filter *graphModel.ExpenseFilter, paginati
 
 	return expenses, nil
 }
+
+func UpdateExpense(ctx context.Context, id int, input graphModel.UpdateExpense) (*model.Expense, error) {
+	var expense model.Expense
+	result := database.DB.First(&expense, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// Update expense fields
+	if input.ItemName != nil && *input.ItemName != "" {
+		expense.ItemName = *input.ItemName
+	}
+	if input.Cost != nil {
+		expense.Cost = *input.Cost
+	}
+	if input.Description != nil {
+		expense.Description = input.Description
+	}
+	if input.Type != nil {
+		expense.Type = *input.Type
+	}
+	if input.EventID != nil {
+		expense.EventID = uint(*input.EventID)
+	}
+
+	// Save updated expense
+	result = database.DB.Save(&expense)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &expense, nil
+}
+
+func DeleteExpense(ctx context.Context, id int) (bool, error) {
+	result := database.DB.Delete(&model.Expense{}, id)
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return true, nil
+}
