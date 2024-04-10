@@ -11,7 +11,7 @@ type Activity struct {
 	Name        string
 	StartTime   *time.Time
 	EndTime     *time.Time
-	Description string
+	Description *string
 	EventID     uint
 	Event       Event `gorm:"foreignKey:EventID"`
 }

@@ -24,7 +24,7 @@ func GetActivityHandler(ctx context.Context, filter *graphModel.ActivityFilter, 
 			Name:        activity.Name,
 			StartTime:   activity.StartTime.Format("2006-01-02T15:04:05"),
 			EndTime:     activity.EndTime.Format("2006-01-02T15:04:05"),
-			Description: &activity.Description,
+			Description: activity.Description,
 			EventID:     int(activity.EventID),
 		})
 	}
@@ -71,7 +71,7 @@ func UpdateActivityHandler(ctx context.Context, idStr string, input graphModel.U
 		Name:        activity.Name,
 		StartTime:   activity.StartTime.Format("2006-01-02T15:04:05"),
 		EndTime:     activity.EndTime.Format("2006-01-02T15:04:05"),
-		Description: &activity.Description,
+		Description: activity.Description,
 		EventID:     int(activity.EventID),
 	}, nil
 }

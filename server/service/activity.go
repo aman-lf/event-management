@@ -26,7 +26,7 @@ func CreateActivity(ctx context.Context, input graphModel.NewActivity) (*model.A
 		Name:        input.Name,
 		StartTime:   &startTime,
 		EndTime:     &endTime,
-		Description: *input.Description,
+		Description: input.Description,
 		EventID:     uint(input.EventID),
 	}
 	result := database.DB.Create(&activity)
@@ -41,7 +41,7 @@ func GetActivitiesByUserId(ctx context.Context, userId int, filter *graphModel.A
 	var activities []*model.Activity
 
 	query := database.DB.Model(&model.Activity{}).
-		Joins("JOIN participants ON participants.event_id = activity.event_id").
+		Joins("JOIN participants ON participants.event_id = activities.event_id").
 		Where("participants.user_id = ?", userId)
 
 	if filter != nil {
@@ -101,7 +101,7 @@ func UpdateActivity(ctx context.Context, id int, input graphModel.UpdateActivity
 		activity.EndTime = &endTime
 	}
 	if input.Description != nil {
-		activity.Description = *input.Description
+		activity.Description = input.Description
 	}
 	if input.EventID != nil {
 		activity.EventID = uint(*input.EventID)

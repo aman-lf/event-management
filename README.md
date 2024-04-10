@@ -12,7 +12,6 @@ A app to manage event, participant and expenses
    git clone https://github.com/aman-lf/event-management.git
    ```
 
-
 ### Setup BE
 
 - **Move to server dir:**
@@ -37,3 +36,9 @@ A app to manage event, participant and expenses
 ## Configuration
 
 - change .env.example to .env in both server and app and provide required credentials
+
+## Migration
+
+```bash
+make migrate-up
+```
