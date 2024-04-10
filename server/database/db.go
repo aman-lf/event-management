@@ -2,7 +2,6 @@ package database
 
 import (
 	"github.com/aman-lf/event-management/config"
-	"github.com/aman-lf/event-management/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -28,12 +27,6 @@ func ConnectDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	db.AutoMigrate(&model.User{})
-	db.AutoMigrate(&model.Event{})
-	db.AutoMigrate(&model.Participant{})
-	db.AutoMigrate(&model.Expense{})
-	db.AutoMigrate(&model.Activity{})
 
 	DB = db
 
