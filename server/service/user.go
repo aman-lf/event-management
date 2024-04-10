@@ -98,10 +98,5 @@ func UpdateUser(ctx context.Context, id int, input graphModel.UpdateUser) (*mode
 }
 
 func DeleteUser(ctx context.Context, id int) (bool, error) {
-	result := database.DB.Delete(&model.User{}, id)
-	if result.Error != nil {
-		return false, result.Error
-	}
-
-	return true, nil
+	return DeleteItem(ctx, &model.User{}, id)
 }

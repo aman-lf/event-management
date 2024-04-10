@@ -135,10 +135,5 @@ func UpdateEvent(ctx context.Context, id int, input graphModel.UpdateEvent) (*mo
 }
 
 func DeleteEvent(ctx context.Context, id int) (bool, error) {
-	result := database.DB.Delete(&model.Event{}, id)
-	if result.Error != nil {
-		return false, result.Error
-	}
-
-	return true, nil
+	return DeleteItem(ctx, &model.Event{}, id)
 }

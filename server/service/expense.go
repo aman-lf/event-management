@@ -92,12 +92,7 @@ func UpdateExpense(ctx context.Context, id int, input graphModel.UpdateExpense) 
 }
 
 func DeleteExpense(ctx context.Context, id int) (bool, error) {
-	result := database.DB.Delete(&model.Expense{}, id)
-	if result.Error != nil {
-		return false, result.Error
-	}
-
-	return true, nil
+	return DeleteItem(ctx, &model.Expense{}, id)
 }
 
 func GetExpenseReport(ctx context.Context, eventId int) (*graphModel.ExpenseReport, error) {

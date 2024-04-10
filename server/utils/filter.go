@@ -9,7 +9,7 @@ import (
 
 func ApplyPagination(query *gorm.DB, pagination *graphModel.Pagination, defaultSort string, sortableCol []string) *gorm.DB {
 	if pagination.SortBy != nil && *pagination.SortBy != "" {
-		sortColumn := "id" // Default sort column
+		sortColumn := defaultSort
 		if ContainsString(sortableCol, *pagination.SortBy) {
 			sortColumn = *pagination.SortBy
 		}

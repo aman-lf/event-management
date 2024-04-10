@@ -117,10 +117,5 @@ func UpdateActivity(ctx context.Context, id int, input graphModel.UpdateActivity
 }
 
 func DeleteActivity(ctx context.Context, id int) (bool, error) {
-	result := database.DB.Delete(&model.Activity{}, id)
-	if result.Error != nil {
-		return false, result.Error
-	}
-
-	return true, nil
+	return DeleteItem(ctx, &model.Activity{}, id)
 }
